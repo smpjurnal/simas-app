@@ -1,9 +1,10 @@
+
 import React, { useState, useMemo } from 'react';
-import { User, UserRole, Student, Teacher, Parent, Admin } from '../types';
+import { UserRole } from '../types';
 
 interface LoginScreenProps {
-  onLogin: (userId: string) => void;
-  users: User[];
+  onLogin: (identifier: string, password: string) => void;
+  error: string | null;
 }
 
 const roleConfig = [
@@ -13,7 +14,7 @@ const roleConfig = [
   { role: UserRole.ADMIN, icon: 'fa-user-shield', label: 'Admin' },
 ];
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, users }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error }) => {
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -36,31 +37,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, users }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmedIdentifier = identifier.trim();
-    const trimmedPassword = password.trim();
-
-    let user: User | undefined;
-
-    switch (selectedRole) {
-      case UserRole.STUDENT:
-        user = users.find(u => u.role === UserRole.STUDENT && (u as Student).nisn === trimmedIdentifier);
-        break;
-      case UserRole.TEACHER:
-        user = users.find(u => u.role === UserRole.TEACHER && (u as Teacher).nip === trimmedIdentifier);
-        break;
-      case UserRole.PARENT:
-        user = users.find(u => u.role === UserRole.PARENT && (u as Parent).nik === trimmedIdentifier);
-        break;
-      case UserRole.ADMIN:
-         user = users.find(u => u.role === UserRole.ADMIN && (u as Admin).nip === trimmedIdentifier);
-        break;
-    }
-
-    if (user && user.password === trimmedPassword) {
-      onLogin(user.id);
-    } else {
-      alert(`${loginIdentifierConfig.label} atau Sandi salah.`);
-    }
+    onLogin(identifier.trim(), password.trim());
   };
 
   const handleBack = () => {
@@ -107,6 +84,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, users }) => {
             <button type="button" onClick={handleBack} className="text-sm text-gray-300 hover:text-white hover:underline mb-6 flex items-center">
               <i className="fas fa-arrow-left mr-2"></i> Kembali pilih peran
             </button>
+
+            {error && (
+                <div className="bg-red-500/30 border border-red-500 text-red-200 p-3 rounded-lg mb-4 text-center text-sm animate-fade-in">
+                    <i className="fas fa-exclamation-circle mr-2"></i>{error}
+                </div>
+            )}
 
             <div className="space-y-4">
                <div>

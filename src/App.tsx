@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { User, UserRole, JournalEntry } from './types';
 import { INITIAL_JOURNAL_CATEGORIES, USERS, INITIAL_JOURNAL_ENTRIES } from './constants';
@@ -11,21 +12,13 @@ import Layout from './components/Layout';
 import SplashScreen from './components/SplashScreen';
 import ErrorScreen from './components/ErrorScreen';
 
-const initializeJournals = (): JournalEntry[] => {
-  const savedEntries = loadState<JournalEntry[]>('journalEntries', []);
-  if (savedEntries.length > 0) {
-    return savedEntries;
-  }
-  const initialEntriesWithIds = INITIAL_JOURNAL_ENTRIES.map((entry, index) => ({
-    ...entry,
-    id: `journal-${Date.now()}-${index}`,
-  })) as JournalEntry[];
-  return initialEntriesWithIds;
-};
+const API_URL = '/api';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const [users, setUsers] = useState<User[]>([]);
@@ -36,24 +29,29 @@ const App: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    try {
-      setUsers(loadState('users', USERS));
-      setJournalEntries(initializeJournals());
-      setJournalCategories(loadState('journalCategories', INITIAL_JOURNAL_CATEGORIES));
-      setAttendanceSettings(loadState('attendanceSettings', { startTime: '07:00', endTime: '09:00' }));
-      setSchoolName(loadState('schoolName', 'SMP NEGERI 4 BALIKPAPAN'));
-      setTheme(loadState('theme', 'light'));
+    const fetchData = async () => {
+      try {
+        const [usersResponse, journalsResponse] = await Promise.all([
+          fetch(`${API_URL}/users`).then(res => res.json()),
+          fetch(`${API_URL}/journals`).then(res => res.json()),
+        ]);
+        setUsers(usersResponse);
+        setJournalEntries(journalsResponse);
+        setJournalCategories(loadState('journalCategories', INITIAL_JOURNAL_CATEGORIES));
+        setAttendanceSettings(loadState('attendanceSettings', { startTime: '07:00', endTime: '09:00' }));
+        setSchoolName(loadState('schoolName', 'SMP NEGERI 4 BALIKPAPAN'));
+        setTheme(loadState('theme', 'light'));
+      } catch (e: any) {
+        console.error("Gagal mengambil data dari API:", e);
+        setError("Gagal mengambil data dari server. Silakan coba lagi nanti.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      setTimeout(() => setIsLoading(false), 1500);
-    } catch (e: any) {
-      console.error("Gagal memuat data dari localStorage:", e);
-      setError("Gagal memuat data aplikasi. Mungkin penyimpanan lokal Anda rusak atau tidak didukung. Coba bersihkan data situs untuk memulai kembali.");
-      setIsLoading(false);
-    }
+    fetchData();
   }, []);
 
-  useEffect(() => { if (!isLoading) saveState('users', users); }, [users, isLoading]);
-  useEffect(() => { if (!isLoading) saveState('journalEntries', journalEntries); }, [journalEntries, isLoading]);
   useEffect(() => { if (!isLoading) saveState('journalCategories', journalCategories); }, [journalCategories, isLoading]);
   useEffect(() => { if (!isLoading) saveState('attendanceSettings', attendanceSettings); }, [attendanceSettings, isLoading]);
   useEffect(() => { if (!isLoading) saveState('schoolName', schoolName); }, [schoolName, isLoading]);
@@ -84,10 +82,25 @@ const App: React.FC = () => {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
   };
 
-  const handleLogin = (userId: string) => {
-    const user = users.find(u => u.id === userId);
-    if (user) {
-      setCurrentUser(user);
+  const handleLogin = async (userId: string, password: string) => {
+    setIsLoggingIn(true);
+    setLoginError(null);
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setCurrentUser(data);
+      } else {
+        setLoginError(data.message || "Gagal untuk masuk");
+      }
+    } catch (error) {
+      setLoginError("Gagal terhubung ke server. Silakan coba lagi.");
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -96,48 +109,63 @@ const App: React.FC = () => {
   };
 
   const handleAddJournal = async (newJournalData: Partial<JournalEntry>) => {
-    const newJournal: JournalEntry = {
-      id: `journal-${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
-      submissionTime: new Date().toLocaleTimeString('id-ID', { hour12: false }),
-      status: 'Pending',
-      behaviorNote: '',
-      ...newJournalData,
-    } as JournalEntry;
+    const response = await fetch(`${API_URL}/journals`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newJournalData),
+    });
+    const newJournal = await response.json();
     setJournalEntries(prev => [newJournal, ...prev]);
   };
 
   const handleUpdateJournal = async (updatedJournal: JournalEntry) => {
+    await fetch(`${API_URL}/journals/${updatedJournal.id}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedJournal),
+      }
+    );
     setJournalEntries(prev => prev.map(j => j.id === updatedJournal.id ? updatedJournal : j));
   };
 
   const handleDeleteJournal = async (journalId: string) => {
+    await fetch(`${API_URL}/journals/${journalId}`, { method: 'DELETE' });
     setJournalEntries(prev => prev.filter(j => j.id !== journalId));
   };
 
   const handleAddUser = async (newUser: User) => {
-    setUsers(prev => [newUser, ...prev].sort((a,b) => a.name.localeCompare(b.name)));
+    const response = await fetch(`${API_URL}/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newUser),
+    });
+    const addedUser = await response.json();
+    setUsers(prev => [addedUser, ...prev].sort((a,b) => a.name.localeCompare(b.name)));
   };
 
   const handleUpdateUser = async (updatedUser: User) => {
+    await fetch(`${API_URL}/users/${updatedUser.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedUser),
+    });
     setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
   };
 
   const handleDeleteUser = async (userId: string) => {
+    await fetch(`${API_URL}/users/${userId}`, { method: 'DELETE' });
     setUsers(prev => prev.filter(u => u.id !== userId));
   };
   
-  const handleResetData = useCallback(() => {
-    // The confirmation logic is now inside AdminDashboard
-    localStorage.clear();
-    setUsers(USERS);
-    setJournalEntries(initializeJournals());
-    setJournalCategories(INITIAL_JOURNAL_CATEGORIES);
-    setAttendanceSettings({ startTime: '07:00', endTime: '09:00' });
-    setSchoolName('SMP NEGERI 4 BALIKPAPAN');
-    setTheme('light');
-    setCurrentUser(null);
-    // Reload is handled in the dashboard to show notification first
+  const handleResetData = useCallback(async () => {
+    await fetch(`${API_URL}/users/reset_application_data`, { method: 'DELETE' });
+    const [usersResponse, journalsResponse] = await Promise.all([
+      fetch(`${API_URL}/users`).then(res => res.json()),
+      fetch(`${API_URL}/journals`).then(res => res.json()),
+    ]);
+    setUsers(usersResponse);
+    setJournalEntries(journalsResponse);
   }, []);
 
   const DashboardComponent = useMemo(() => {
@@ -195,7 +223,7 @@ const App: React.FC = () => {
   }
 
   if (!currentUser) {
-    return <LoginScreen onLogin={handleLogin} users={users} />;
+    return <LoginScreen onLogin={handleLogin} error={loginError} />;
   }
 
   return (
