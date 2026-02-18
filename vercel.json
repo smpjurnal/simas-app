@@ -2,6 +2,11 @@
   "installCommand": "npm install --force",
   "builds": [
     {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    },
+    {
       "src": "firebase/functions/src/index.ts",
       "use": "@vercel/node"
     }
