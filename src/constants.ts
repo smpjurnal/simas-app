@@ -6,6 +6,7 @@ export const STUDENTS: Student[] = [
   { id: 'student-2', name: 'Citra Lestari', nisn: '002', role: UserRole.STUDENT, avatar: 'https://i.pravatar.cc/150?u=student2', email: 'citra@sekolah.id', password: 'password123', class: 'Kelas 5A', teacherId: 'teacher-1', parentId: 'parent-2' },
   { id: 'student-3', name: 'Andi Pratama', nisn: '003', role: UserRole.STUDENT, avatar: 'https://i.pravatar.cc/150?u=student3', email: 'andi@sekolah.id', password: 'password123', class: 'Kelas 5A', teacherId: 'teacher-1', parentId: 'parent-3' },
   { id: 'student-4', name: 'Eka Yuliana', nisn: '004', role: UserRole.STUDENT, avatar: 'https://i.pravatar.cc/150?u=student4', email: 'eka@sekolah.id', password: 'password123', class: 'Kelas 5A', teacherId: 'teacher-1', parentId: 'parent-4' },
+  { id: 'student-5', name: 'Siswa Baru', nisn: '005', role: UserRole.STUDENT, avatar: 'https://i.pravatar.cc/150?u=student5', email: 'siswa.baru@sekolah.id', password: 'password123', class: 'Kelas 5A', teacherId: 'teacher-1', parentId: 'parent-5' },
 ];
 
 export const TEACHERS: Teacher[] = [
@@ -18,6 +19,7 @@ export const PARENTS: Parent[] = [
   { id: 'parent-2', name: 'Ibu Citra', role: UserRole.PARENT, avatar: 'https://i.pravatar.cc/150?u=parent2', email: 'ibucitra@email.com', password: 'password123', nik: '3301015010820002', childId: 'student-2' },
   { id: 'parent-3', name: 'Bapak Andi', role: UserRole.PARENT, avatar: 'https://i.pravatar.cc/150?u=parent3', email: 'bapakandi@email.com', password: 'password123', nik: '3301011010850003', childId: 'student-3' },
   { id: 'parent-4', name: 'Ibu Eka', role: UserRole.PARENT, avatar: 'https://i.pravatar.cc/150?u=parent4', email: 'ibueka@email.com', password: 'password123', nik: '3301015010900004', childId: 'student-4' },
+  { id: 'parent-5', name: 'Orang Tua Siswa Baru', role: UserRole.PARENT, avatar: 'https://i.pravatar.cc/150?u=parent5', email: 'orangtua.baru@email.com', password: 'password123', nik: '3301011010800005', childId: 'student-5' },
 ];
 
 export const ADMINS: Admin[] = [
