@@ -222,13 +222,13 @@ const App: React.FC = () => {
     return <ErrorScreen message={error} onRetry={() => window.location.reload()} />;
   }
 
+  if (!currentUser) {
+    return <LoginScreen onLogin={handleLogin} error={loginError} isLoggingIn={isLoggingIn} />;
+  }
+
   return (
     <Layout user={currentUser} onLogout={handleLogout} toggleTheme={toggleTheme} theme={theme}>
-      {currentUser ? (
-        DashboardComponent
-      ) : (
-        <LoginScreen onLogin={handleLogin} error={loginError} isLoggingIn={isLoggingIn} />
-      )}
+      {DashboardComponent}
     </Layout>
   );
 };
