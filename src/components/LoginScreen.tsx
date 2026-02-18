@@ -50,22 +50,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error, isLoggingIn }
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4 transition-all duration-500 bg-cover bg-center"
+      className="min-h-screen flex items-center justify-center transition-all duration-500 bg-cover bg-center"
       style={{ backgroundImage: "url('https://i.imgur.com/hgMTKRD.jpeg')" }}
     >
-      <div className="max-w-md w-full">
+      <div className="max-w-md w-full p-4">
         <div
           className="bg-slate-800/60 backdrop-blur-lg shadow-2xl rounded-xl p-6 transition-all duration-300"
         >
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-white mb-2">
-              {selectedRole 
-                ? <><i className="fas fa-book-open mr-2"></i>Jurnal Siswa</> 
-                : 'Pilih Peran Anda (Test)'}
+              {selectedRole
+                ? <><i className="fas fa-book-open mr-2"></i>Jurnal Siswa</>
+                : 'Pilih Peran Anda'}
             </h1>
             <p className="text-gray-300 text-sm">
-              {selectedRole 
-                ? `Masuk sebagai ${selectedRole}` 
+              {selectedRole
+                ? `Masuk sebagai ${selectedRole}`
                 : 'Sistem Informasi Jurnal Siswa'}
             </p>
           </div>
