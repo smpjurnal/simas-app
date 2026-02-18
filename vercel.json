@@ -1,4 +1,10 @@
 {
+  "builds": [
+    {
+      "src": "firebase/functions/src/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/firebase/functions/src/index.ts" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
