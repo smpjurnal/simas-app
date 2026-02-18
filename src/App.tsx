@@ -82,14 +82,14 @@ const App: React.FC = () => {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
   };
 
-  const handleLogin = async (userId: string, password: string) => {
+  const handleLogin = async (identifier: string, password: string) => {
     setIsLoggingIn(true);
     setLoginError(null);
     try {
       const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, password }),
+        body: JSON.stringify({ identifier, password }),
       });
       const data = await response.json();
       if (response.ok) {
@@ -222,13 +222,13 @@ const App: React.FC = () => {
     return <ErrorScreen message={error} onRetry={() => window.location.reload()} />;
   }
 
-  if (!currentUser) {
-    return <LoginScreen onLogin={handleLogin} error={loginError} />;
-  }
-
   return (
     <Layout user={currentUser} onLogout={handleLogout} toggleTheme={toggleTheme} theme={theme}>
-      {DashboardComponent}
+      {currentUser ? (
+        DashboardComponent
+      ) : (
+        <LoginScreen onLogin={handleLogin} error={loginError} isLoggingIn={isLoggingIn} />
+      )}
     </Layout>
   );
 };
