@@ -12,7 +12,7 @@ import AdminDashboard from './components/dashboards/AdminDashboard';
 import Layout from './components/Layout';
 import ErrorScreen from './components/ErrorScreen';
 
-const API_URL = '/api';
+const API_URL = process.env.NODE_ENV === 'production' ? `https://${process.env.REACT_APP_VERCEL_URL}/api` : '/api';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
