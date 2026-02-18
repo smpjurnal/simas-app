@@ -1,5 +1,4 @@
 {
-  "installCommand": "npm install --force",
   "builds": [
     {
       "src": "package.json",
@@ -14,5 +13,6 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/firebase/functions/src/index.ts" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ]
+  ],
+  "installCommand": "(cd firebase/functions && npm install) && npm install"
 }
