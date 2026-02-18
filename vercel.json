@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/:path*", "destination": "/index.html" }
+    { "source": "/api/(.*)", "destination": "/firebase/functions/src/index.ts" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
