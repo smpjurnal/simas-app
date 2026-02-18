@@ -1,18 +1,6 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
-    {
-      "src": "firebase/functions/src/index.ts",
-      "use": "@vercel/node"
-    }
-  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/firebase/functions/src/index.ts" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ],
-  "installCommand": "(cd firebase/functions && npm install) && npm install"
+  ]
 }
