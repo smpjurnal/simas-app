@@ -6,7 +6,25 @@ import * as cors from "cors";
 import { USERS, INITIAL_JOURNAL_ENTRIES, INITIAL_JOURNAL_CATEGORIES } from "./constants";
 
 // Initialize Firebase Admin SDK
-admin.initializeApp();
+// Vercel environment requires explicit credential initialization.
+// The FIREBASE_SERVICE_ACCOUNT_KEY environment variable should be set in Vercel project settings.
+try {
+  const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (serviceAccountKey) {
+    const serviceAccount = JSON.parse(serviceAccountKey);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+    functions.logger.info("Firebase Admin SDK initialized with service account.");
+  } else {
+    // This will be used for Firebase emulators or direct Firebase deployment.
+    admin.initializeApp();
+    functions.logger.info("Firebase Admin SDK initialized without service account (default).");
+  }
+} catch (error) {
+  functions.logger.error("Firebase Admin SDK initialization error:", error);
+}
+
 const db = admin.firestore();
 
 const app = express();
