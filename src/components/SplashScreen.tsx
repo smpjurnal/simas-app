@@ -11,9 +11,6 @@ const SplashScreen: React.FC = () => {
           Sistem Informasi Jurnal Siswa
         </p>
       </div>
-      <div className="absolute bottom-10 text-center animate-fade-in opacity-0" style={{ animationDelay: '1s' }}>
-        <p className="text-lg font-semibold">SMP NEGERI 4 BALIKPAPAN</p>
-      </div>
     </div>
   );
 };
