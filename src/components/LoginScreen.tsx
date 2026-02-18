@@ -5,6 +5,7 @@ import { UserRole } from '../types';
 interface LoginScreenProps {
   onLogin: (identifier: string, password: string) => void;
   error: string | null;
+  isLoggingIn: boolean;
 }
 
 const roleConfig = [
@@ -14,7 +15,7 @@ const roleConfig = [
   { role: UserRole.ADMIN, icon: 'fa-user-shield', label: 'Admin' },
 ];
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error, isLoggingIn }) => {
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -37,6 +38,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoggingIn) return;
     onLogin(identifier.trim(), password.trim());
   };
 
@@ -51,49 +53,52 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error }) => {
       className="min-h-screen flex items-center justify-center p-4 transition-all duration-500 bg-cover bg-center"
       style={{ backgroundImage: "url('https://i.imgur.com/hgMTKRD.jpeg')" }}
     >
-      <div className="max-w-md w-full p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            {selectedRole 
-                ? <><i className="fas fa-book-open mr-2"></i>Jurnal Siswa</> 
+      <div className="max-w-md w-full">
+        <div
+          className="bg-slate-800/60 backdrop-blur-lg shadow-2xl rounded-xl p-6 transition-all duration-300"
+        >
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              {selectedRole
+                ? <><i className="fas fa-book-open mr-2"></i>Jurnal Siswa</>
                 : 'Pilih Peran Anda'}
-          </h1>
-          <p className="text-gray-200">
-            {selectedRole 
-                ? `Masuk sebagai ${selectedRole}` 
+            </h1>
+            <p className="text-gray-300 text-sm">
+              {selectedRole
+                ? `Masuk sebagai ${selectedRole}`
                 : 'Sistem Informasi Jurnal Siswa'}
-          </p>
-        </div>
-        
-        {!selectedRole ? (
-          <div className="grid grid-cols-2 gap-4 animate-fade-in">
-            {roleConfig.map(({ role, icon, label }) => (
-              <button
-                key={role}
-                type="button"
-                onClick={() => setSelectedRole(role)}
-                className="flex flex-col items-center justify-center space-y-3 p-6 bg-slate-700/50 border-2 border-slate-600 rounded-xl hover:bg-slate-700 hover:border-primary-500 transition-all duration-200 w-full"
-              >
-                <i className={`fas ${icon} fa-3x text-white`}></i>
-                <span className="font-semibold text-white">{label}</span>
-              </button>
-            ))}
+            </p>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="animate-fade-in">
-            <button type="button" onClick={handleBack} className="text-sm text-gray-300 hover:text-white hover:underline mb-6 flex items-center">
-              <i className="fas fa-arrow-left mr-2"></i> Kembali pilih peran
-            </button>
 
-            {error && (
+          {!selectedRole ? (
+            <div className="grid grid-cols-2 gap-4 animate-fade-in">
+              {roleConfig.map(({ role, icon, label }) => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => setSelectedRole(role)}
+                  className="flex flex-col items-center justify-center space-y-2 p-4 bg-slate-700/50 border-2 border-slate-600 rounded-xl hover:bg-slate-700 hover:border-primary-500 transition-all duration-200 w-full"
+                >
+                  <i className={`fas ${icon} fa-2x text-white`}></i>
+                  <span className="font-semibold text-white text-center">{label}</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="animate-fade-in">
+              <button type="button" onClick={handleBack} className="text-sm text-gray-300 hover:text-white hover:underline mb-4 flex items-center">
+                <i className="fas fa-arrow-left mr-2"></i> Kembali pilih peran
+              </button>
+
+              {error && (
                 <div className="bg-red-500/30 border border-red-500 text-red-200 p-3 rounded-lg mb-4 text-center text-sm animate-fade-in">
-                    <i className="fas fa-exclamation-circle mr-2"></i>{error}
+                  <i className="fas fa-exclamation-circle mr-2"></i>{error}
                 </div>
-            )}
+              )}
 
-            <div className="space-y-4">
-               <div>
-                  <label htmlFor="identifier" className="block mb-2 text-sm font-medium text-gray-200">{loginIdentifierConfig.label}</label>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="identifier" className="block mb-2 text-sm font-medium text-gray-300">{loginIdentifierConfig.label}</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <i className={`fas ${loginIdentifierConfig.icon} text-gray-400`}></i>
@@ -112,11 +117,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error }) => {
                   </div>
                 </div>
 
-               <div>
-                  <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-200">Sandi</label>
+                <div>
+                  <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-300">Sandi</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <i className="fas fa-key text-gray-400"></i>
+                      <i className="fas fa-key text-gray-400`}></i>
                     </div>
                     <input
                       type={isPasswordVisible ? 'text' : 'password'}
@@ -130,26 +135,31 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error }) => {
                       autoComplete="current-password"
                     />
                     <button
-                        type="button"
-                        onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                        aria-label="Toggle password visibility"
+                      type="button"
+                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                      aria-label="Toggle password visibility"
                     >
-                        <i className={`fas ${isPasswordVisible ? 'fa-eye-slash' : 'fa-eye'} text-gray-400 hover:text-white transition-colors`}></i>
+                      <i className={`fas ${isPasswordVisible ? 'fa-eye-slash' : 'fa-eye'} text-gray-400 hover:text-white transition-colors`}></i>
                     </button>
                   </div>
                 </div>
-            </div>
+              </div>
 
-            <button
-              type="submit"
-              disabled={!identifier || !password}
-              className="w-full mt-6 text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-3 text-center transition-all duration-200 disabled:bg-slate-600 disabled:cursor-not-allowed"
-            >
-              Masuk
-            </button>
-          </form>
-        )}
+              <button
+                type="submit"
+                disabled={!identifier || !password || isLoggingIn}
+                className="w-full mt-5 text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all duration-200 disabled:bg-slate-600 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                {isLoggingIn ? (
+                  <><i className="fas fa-circle-notch fa-spin mr-2"></i> Memproses...</>
+                ) : (
+                  'Masuk'
+                )}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
