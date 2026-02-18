@@ -218,6 +218,6 @@ app.post("/seed-data", async (req, res) => {
   }
 });
 
-// Expose Express API as a single Cloud Function
-// Triggering a new deployment
+// Expose Express API as a single Cloud Function.
+// Ready for production deployment.
 export const api = functions.https.onRequest(app);
