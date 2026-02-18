@@ -10,7 +10,6 @@ import TeacherDashboard from './components/dashboards/TeacherDashboard';
 import ParentDashboard from './components/dashboards/ParentDashboard';
 import AdminDashboard from './components/dashboards/AdminDashboard';
 import Layout from './components/Layout';
-import SplashScreen from './components/SplashScreen';
 import ErrorScreen from './components/ErrorScreen';
 
 const API_URL = '/api';
@@ -216,7 +215,7 @@ const App: React.FC = () => {
   }, [currentUser, journalCategories, attendanceSettings, users, journalEntries, handleResetData]);
 
   if (isLoading) {
-    return <SplashScreen />;
+    return null;
   }
 
   if (error) {
