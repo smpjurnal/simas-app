@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [journalCategories, setJournalCategories] = useState<string[]>([]);
   const [attendanceSettings, setAttendanceSettings] = useState({ startTime: '07:00', endTime: '09:00' });
-  const [schoolName, setSchoolName] = useState('SMP NEGERI 4 BALIKPAPAN');
+  const [schoolName, setSchoolName] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const App: React.FC = () => {
         setJournalEntries(journalsResponse);
         setJournalCategories(loadState('journalCategories', INITIAL_JOURNAL_CATEGORIES));
         setAttendanceSettings(loadState('attendanceSettings', { startTime: '07:00', endTime: '09:00' }));
-        setSchoolName(loadState('schoolName', 'SMP NEGERI 4 BALIKPAPAN'));
+        setSchoolName(loadState('schoolName', ''));
         setTheme(loadState('theme', 'light'));
       } catch (e: any) {
         console.error("Gagal mengambil data dari API:", e);
