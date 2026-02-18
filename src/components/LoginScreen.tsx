@@ -59,13 +59,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error, isLoggingIn }
         >
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-white mb-2">
-              {selectedRole
-                ? <><i className="fas fa-book-open mr-2"></i>Jurnal Siswa</>
-                : 'Pilih Peran Anda'}
+              {selectedRole 
+                ? <><i className="fas fa-book-open mr-2"></i>Jurnal Siswa</> 
+                : 'Pilih Peran Anda (Test)'}
             </h1>
             <p className="text-gray-300 text-sm">
-              {selectedRole
-                ? `Masuk sebagai ${selectedRole}`
+              {selectedRole 
+                ? `Masuk sebagai ${selectedRole}` 
                 : 'Sistem Informasi Jurnal Siswa'}
             </p>
           </div>
@@ -121,7 +121,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, error, isLoggingIn }
                   <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-300">Sandi</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <i className="fas fa-key text-gray-400`}></i>
+                      <i className={`fas fa-key text-gray-400`}></i>
                     </div>
                     <input
                       type={isPasswordVisible ? 'text' : 'password'}
